@@ -397,25 +397,6 @@
     };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
     // ==========================================
     // SWITCH-CASE POWERED TAB NAVIGATION
     // ==========================================
@@ -1031,35 +1012,148 @@
       }
     }
 
-    function generateQuizQuestion() {
-      const qText = document.getElementById('quiz-question-text');
-      const optionsContainer = document.getElementById('quiz-options-container');
 
-      qText.textContent = "Which CPU scheduling algorithm can lead to the 'Convoy Effect'?";
-      optionsContainer.innerHTML = [
-        "First-Come, First-Served (FCFS)",
-        "Round Robin (RR)",
-        "Shortest Remaining Time First (SRTF)",
-        "Priority Scheduling"
-      ].map((opt, idx) => `
-        <button onclick="answerQuiz(${idx === 0})" class="w-full text-left p-3 text-xs font-bold bg-white border border-pink-200 hover:bg-pink-100/50 rounded-xl transition">
-          ${opt}
-        </button>
-      `).join('');
-    }
+    
+const quizQuestions = [
+  {
+    question: "1. Which algorithm can cause the Convoy Effect?",
+    options: ["FCFS", "Round Robin", "SRTF", "LJF"],
+    answer: 0,
+    explanation: "FCFS can cause the Convoy Effect because short processes may wait behind a long process."
+  },
+  {
+    question: "2. Which algorithm uses a Time Quantum?",
+    options: ["FCFS", "SJF", "Round Robin", "Priority"],
+    answer: 2,
+    explanation: "Round Robin assigns each process a fixed time quantum."
+  },
+  {
+    question: "3. What is Turnaround Time (TAT)?",
+    options: [
+      "CT - AT",
+      "CT - BT",
+      "BT - AT",
+      "AT + WT"
+    ],
+    answer: 0,
+    explanation: "Turnaround Time = Completion Time - Arrival Time."
+  },
+  {
+    question: "4. How is Waiting Time (WT) calculated?",
+    options: [
+      "CT + AT",
+      "TAT - BT",
+      "AT - BT",
+      "CT - TAT"
+    ],
+    answer: 1,
+    explanation: "Waiting Time = Turnaround Time - Burst Time."
+  },
+  {
+    question: "5. Which algorithm selects the shortest available burst?",
+    options: ["FCFS", "Priority", "SJF", "Round Robin"],
+    answer: 2,
+    explanation: "SJF selects the available process with the smallest burst time."
+  },
+  {
+    question: "6. What does FCFS stand for?",
+    options: [
+      "First Come First Serve",
+      "Fast CPU First Selection",
+      "First Cycle First Schedule",
+      "Fixed CPU First Service"
+    ],
+    answer: 0,
+    explanation: "FCFS stands for First Come First Serve."
+  },
+  {
+    question: "7. Which algorithm can preempt a running process when a shorter remaining job arrives?",
+    options: ["FCFS", "SRTF", "Non-preemptive SJF", "FIFO only"],
+    answer: 1,
+    explanation: "SRTF is preemptive and chooses the process with the shortest remaining time."
+  },
+  {
+    question: "8. What is Completion Time (CT)?",
+    options: [
+      "Time when a process arrives",
+      "Total waiting time",
+      "Time when a process finishes execution",
+      "CPU burst duration only"
+    ],
+    answer: 2,
+    explanation: "Completion Time is the time at which a process finishes execution."
+  }
+];
 
-    function answerQuiz(isCorrect) {
-      const exp = document.getElementById('quiz-explanation');
-      exp.classList.remove('hidden');
-      if (isCorrect) {
-        exp.className = "p-4 bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-xl text-xs font-semibold";
-        exp.textContent = "Correct! FCFS causes shorter processes to wait behind long CPU-bound tasks, creating a convoy effect.";
-        confetti({ particleCount: 50 });
-      } else {
-        exp.className = "p-4 bg-rose-100 text-rose-900 border border-rose-200 rounded-xl text-xs font-semibold";
-        exp.textContent = "Incorrect. The Convoy Effect specifically occurs in FCFS when a large process holds the CPU.";
-      }
+let currentQuizIndex = 0;
+let quizAnswered = false;
+
+function generateQuizQuestion() {
+  const q = quizQuestions[currentQuizIndex];
+
+  quizAnswered = false;
+
+  document.getElementById("quiz-question-text").textContent =
+    q.question;
+
+  document.getElementById("quiz-options-container").innerHTML =
+    q.options.map((opt, idx) => `
+      <button
+        onclick="answerQuiz(${idx})"
+        class="w-full text-left p-3 text-xs font-bold bg-white border border-pink-200 hover:bg-pink-100 rounded-xl transition">
+        ${opt}
+      </button>
+    `).join("");
+
+  const exp = document.getElementById("quiz-explanation");
+  exp.className = "hidden p-4 rounded-xl text-xs leading-relaxed";
+  exp.textContent = "";
+}
+
+function answerQuiz(selectedIndex) {
+  if (quizAnswered) return;
+
+  quizAnswered = true;
+
+  const q = quizQuestions[currentQuizIndex];
+  const exp = document.getElementById("quiz-explanation");
+  const buttons = document.querySelectorAll(
+    "#quiz-options-container button"
+  );
+
+  buttons.forEach((button, idx) => {
+    button.disabled = true;
+
+    if (idx === q.answer) {
+      button.classList.add("bg-emerald-100", "border-emerald-500");
+    } else if (idx === selectedIndex) {
+      button.classList.add("bg-rose-100", "border-rose-500");
     }
+  });
+
+  exp.classList.remove("hidden");
+
+  if (selectedIndex === q.answer) {
+    exp.className =
+      "p-4 bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-xl text-xs font-semibold";
+    exp.textContent = "Correct! " + q.explanation;
+  } else {
+    exp.className =
+      "p-4 bg-rose-100 text-rose-900 border border-rose-200 rounded-xl text-xs font-semibold";
+    exp.textContent =
+      "Incorrect. Correct answer: " +
+      q.options[q.answer] + ". " + q.explanation;
+  }
+}
+
+// Next Question button
+document.getElementById("nav-quiz"); // Quiz navigation exists
+
+function nextQuizQuestion() {
+  currentQuizIndex =
+    (currentQuizIndex + 1) % quizQuestions.length;
+  generateQuizQuestion();
+}
 
     // Initialize Page
     window.onload = () => {
