@@ -397,6 +397,25 @@
     };
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
     // ==========================================
     // SWITCH-CASE POWERED TAB NAVIGATION
     // ==========================================
@@ -1012,148 +1031,140 @@
       }
     }
 
+    // ==========================================
+    // MULTIPLE-QUESTION QUIZ MODULE
+    // ==========================================
+    const quizQuestions = [
+      {
+        question: "Which CPU scheduling algorithm can lead to the Convoy Effect?",
+        options: ["First-Come, First-Served (FCFS)", "Round Robin (RR)", "Shortest Remaining Time First (SRTF)", "Priority Scheduling"],
+        answer: 0,
+        explanation: "FCFS can cause short processes to wait behind a long process, creating the Convoy Effect."
+      },
+      {
+        question: "What does Turnaround Time (TAT) mean?",
+        options: ["Completion Time − Arrival Time", "Burst Time − Waiting Time", "Arrival Time + Waiting Time", "Completion Time − Burst Time"],
+        answer: 0,
+        explanation: "Turnaround Time = Completion Time − Arrival Time."
+      },
+      {
+        question: "Which scheduling algorithm gives each process a fixed time slice?",
+        options: ["FCFS", "Round Robin", "Non-Preemptive SJF", "LJF"],
+        answer: 1,
+        explanation: "Round Robin gives each ready process CPU time for a fixed time quantum."
+      },
+      {
+        question: "Which algorithm selects the available process with the smallest burst time?",
+        options: ["Longest Job First (LJF)", "FCFS", "Shortest Job First (SJF)", "Round Robin"],
+        answer: 2,
+        explanation: "Non-preemptive SJF chooses the available process with the smallest burst time."
+      },
+      {
+        question: "How is Waiting Time (WT) calculated?",
+        options: ["TAT + Burst Time", "TAT − Burst Time", "Completion Time + Arrival Time", "Arrival Time − Completion Time"],
+        answer: 1,
+        explanation: "Waiting Time = Turnaround Time − Burst Time."
+      },
+      {
+        question: "A process arrives at time 2 and completes at time 10. What is its turnaround time?",
+        options: ["8 units", "12 units", "10 units", "2 units"],
+        answer: 0,
+        explanation: "TAT = CT − AT = 10 − 2 = 8 time units."
+      },
+      {
+        question: "Which scheduling algorithm is preemptive?",
+        options: ["FCFS", "SJF (Non-Preemptive)", "SRTF", "LJF (Non-Preemptive)"],
+        answer: 2,
+        explanation: "SRTF can interrupt the running process when a process with a shorter remaining time arrives."
+      },
+      {
+        question: "In priority scheduling, if a smaller number means higher priority, which process has the highest priority?",
+        options: ["Priority 4", "Priority 3", "Priority 2", "Priority 1"],
+        answer: 3,
+        explanation: "Under the stated convention, the smallest priority number represents the highest priority."
+      },
+      {
+        question: "A process has BT = 5 and TAT = 9. What is its waiting time?",
+        options: ["14 units", "4 units", "5 units", "9 units"],
+        answer: 1,
+        explanation: "WT = TAT − BT = 9 − 5 = 4 time units."
+      },
+      {
+        question: "What is the main purpose of a Gantt chart in CPU scheduling?",
+        options: ["To show process execution order and time intervals", "To store files permanently", "To increase CPU burst time", "To calculate only arrival time"],
+        answer: 0,
+        explanation: "A Gantt chart visually shows which process runs during each time interval."
+      }
+    ];
 
-    
-const quizQuestions = [
-  {
-    question: "1. Which algorithm can cause the Convoy Effect?",
-    options: ["FCFS", "Round Robin", "SRTF", "LJF"],
-    answer: 0,
-    explanation: "FCFS can cause the Convoy Effect because short processes may wait behind a long process."
-  },
-  {
-    question: "2. Which algorithm uses a Time Quantum?",
-    options: ["FCFS", "SJF", "Round Robin", "Priority"],
-    answer: 2,
-    explanation: "Round Robin assigns each process a fixed time quantum."
-  },
-  {
-    question: "3. What is Turnaround Time (TAT)?",
-    options: [
-      "CT - AT",
-      "CT - BT",
-      "BT - AT",
-      "AT + WT"
-    ],
-    answer: 0,
-    explanation: "Turnaround Time = Completion Time - Arrival Time."
-  },
-  {
-    question: "4. How is Waiting Time (WT) calculated?",
-    options: [
-      "CT + AT",
-      "TAT - BT",
-      "AT - BT",
-      "CT - TAT"
-    ],
-    answer: 1,
-    explanation: "Waiting Time = Turnaround Time - Burst Time."
-  },
-  {
-    question: "5. Which algorithm selects the shortest available burst?",
-    options: ["FCFS", "Priority", "SJF", "Round Robin"],
-    answer: 2,
-    explanation: "SJF selects the available process with the smallest burst time."
-  },
-  {
-    question: "6. What does FCFS stand for?",
-    options: [
-      "First Come First Serve",
-      "Fast CPU First Selection",
-      "First Cycle First Schedule",
-      "Fixed CPU First Service"
-    ],
-    answer: 0,
-    explanation: "FCFS stands for First Come First Serve."
-  },
-  {
-    question: "7. Which algorithm can preempt a running process when a shorter remaining job arrives?",
-    options: ["FCFS", "SRTF", "Non-preemptive SJF", "FIFO only"],
-    answer: 1,
-    explanation: "SRTF is preemptive and chooses the process with the shortest remaining time."
-  },
-  {
-    question: "8. What is Completion Time (CT)?",
-    options: [
-      "Time when a process arrives",
-      "Total waiting time",
-      "Time when a process finishes execution",
-      "CPU burst duration only"
-    ],
-    answer: 2,
-    explanation: "Completion Time is the time at which a process finishes execution."
-  }
-];
+    let currentQuizIndex = 0;
+    let quizAnswered = false;
+    let quizScore = 0;
 
-let currentQuizIndex = 0;
-let quizAnswered = false;
+    function generateQuizQuestion() {
+      const qText = document.getElementById('quiz-question-text');
+      const optionsContainer = document.getElementById('quiz-options-container');
+      const exp = document.getElementById('quiz-explanation');
+      const nextBtn = document.querySelector('#tab-quiz button[onclick="generateQuizQuestion()"]');
 
-function generateQuizQuestion() {
-  const q = quizQuestions[currentQuizIndex];
+      // Move to the next question only after the current one has been answered.
+      if (quizAnswered) {
+        if (currentQuizIndex >= quizQuestions.length - 1) {
+          currentQuizIndex = 0;
+          quizScore = 0;
+        } else {
+          currentQuizIndex++;
+        }
+      }
 
-  quizAnswered = false;
+      quizAnswered = false;
+      const q = quizQuestions[currentQuizIndex];
+      qText.textContent = `Question ${currentQuizIndex + 1} of ${quizQuestions.length}: ${q.question}`;
+      optionsContainer.innerHTML = q.options.map((opt, idx) => `
+        <button type="button" data-option="${idx}"
+          onclick="answerQuiz(${idx})"
+          class="w-full text-left p-3 text-xs font-bold bg-white border border-pink-200 hover:bg-pink-100/50 rounded-xl transition">
+          ${String.fromCharCode(65 + idx)}. ${opt}
+        </button>
+      `).join('');
 
-  document.getElementById("quiz-question-text").textContent =
-    q.question;
-
-  document.getElementById("quiz-options-container").innerHTML =
-    q.options.map((opt, idx) => `
-      <button
-        onclick="answerQuiz(${idx})"
-        class="w-full text-left p-3 text-xs font-bold bg-white border border-pink-200 hover:bg-pink-100 rounded-xl transition">
-        ${opt}
-      </button>
-    `).join("");
-
-  const exp = document.getElementById("quiz-explanation");
-  exp.className = "hidden p-4 rounded-xl text-xs leading-relaxed";
-  exp.textContent = "";
-}
-
-function answerQuiz(selectedIndex) {
-  if (quizAnswered) return;
-
-  quizAnswered = true;
-
-  const q = quizQuestions[currentQuizIndex];
-  const exp = document.getElementById("quiz-explanation");
-  const buttons = document.querySelectorAll(
-    "#quiz-options-container button"
-  );
-
-  buttons.forEach((button, idx) => {
-    button.disabled = true;
-
-    if (idx === q.answer) {
-      button.classList.add("bg-emerald-100", "border-emerald-500");
-    } else if (idx === selectedIndex) {
-      button.classList.add("bg-rose-100", "border-rose-500");
+      exp.className = "hidden p-4 bg-slate-100 border border-slate-200 rounded-xl text-xs leading-relaxed";
+      exp.textContent = "";
+      nextBtn.textContent = currentQuizIndex === quizQuestions.length - 1 ? "Finish / Restart Quiz" : "Next Question";
+      lucide.createIcons();
     }
-  });
 
-  exp.classList.remove("hidden");
+    function answerQuiz(selectedIndex) {
+      if (quizAnswered) return;
+      const q = quizQuestions[currentQuizIndex];
+      const exp = document.getElementById('quiz-explanation');
+      const buttons = document.querySelectorAll('#quiz-options-container button');
 
-  if (selectedIndex === q.answer) {
-    exp.className =
-      "p-4 bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-xl text-xs font-semibold";
-    exp.textContent = "Correct! " + q.explanation;
-  } else {
-    exp.className =
-      "p-4 bg-rose-100 text-rose-900 border border-rose-200 rounded-xl text-xs font-semibold";
-    exp.textContent =
-      "Incorrect. Correct answer: " +
-      q.options[q.answer] + ". " + q.explanation;
-  }
-}
+      quizAnswered = true;
+      buttons.forEach((button, idx) => {
+        button.disabled = true;
+        button.classList.remove('hover:bg-pink-100/50');
+        if (idx === q.answer) {
+          button.classList.add('bg-emerald-100', 'border-emerald-500');
+        } else if (idx === selectedIndex) {
+          button.classList.add('bg-rose-100', 'border-rose-500');
+        }
+      });
 
-// Next Question button
-document.getElementById("nav-quiz"); // Quiz navigation exists
+      exp.classList.remove('hidden');
+      if (selectedIndex === q.answer) {
+        quizScore++;
+        exp.className = "p-4 bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-xl text-xs font-semibold";
+        exp.textContent = `Correct! ${q.explanation} Score: ${quizScore}/${currentQuizIndex + 1}`;
+        if (typeof confetti === 'function') confetti({ particleCount: 50 });
+      } else {
+        exp.className = "p-4 bg-rose-100 text-rose-900 border border-rose-200 rounded-xl text-xs font-semibold";
+        exp.textContent = `Not quite. ${q.explanation} Score: ${quizScore}/${currentQuizIndex + 1}`;
+      }
 
-function nextQuizQuestion() {
-  currentQuizIndex =
-    (currentQuizIndex + 1) % quizQuestions.length;
-  generateQuizQuestion();
-}
+      const nextBtn = document.querySelector('#tab-quiz button[onclick="generateQuizQuestion()"]');
+      nextBtn.textContent = currentQuizIndex === quizQuestions.length - 1 ? `Restart Quiz (${quizScore}/${quizQuestions.length})` : "Next Question";
+    }
 
     // Initialize Page
     window.onload = () => {
